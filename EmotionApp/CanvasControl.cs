@@ -119,16 +119,20 @@ namespace EmotionApp
                         
                     }
 
-                    if (info != null)
+                    if (info != null && info.ToString().Equals("Smile"))
                     {
-                        string[] items = info.ToString().Split(new String[] { " " }, 2, StringSplitOptions.None); 
-                        if (!eFaceInfo.ContainsKey(items[1]))
+                        if (value > 5)
                         {
-                            eFaceInfo.Add(items[1], new List<int> { count++ });
-                        }
-                        else
-                        {
-                            eFaceInfo[items[1]].Add(count);
+
+                            string[] items = info.ToString().Split(new String[] { " " }, 2, StringSplitOptions.None); 
+                            if (!eFaceInfo.ContainsKey(items[1]))
+                            {
+                                eFaceInfo.Add(items[1], new List<int> { count++ });
+                            }
+                            else
+                            {
+                                eFaceInfo[items[1]].Add(count);
+                            }
                         }
                     }
                 }
