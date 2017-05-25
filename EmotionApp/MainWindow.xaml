@@ -1,0 +1,50 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:EmotionApp="clr-namespace:EmotionApp;assembly="
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        mc:Ignorable="d" 
+        x:Class="EmotionApp.MainWindow"
+        Title="EmotionApp" 
+        Height="720" Width="1280"
+        MinHeight="640" MinWidth="480"
+        MaxHeight="720" MaxWidth="1280"
+        ResizeMode="NoResize"
+        
+        Loaded="Window_Loaded"
+        Closing="Window_Closing">
+
+    <Grid x:Name="gridMainDisplay" Margin="0,0,0,0">
+        <Grid x:Name="gridContentDisplay" DockPanel.Dock="Top">
+
+            <StackPanel x:Name="stackPanelImage" Orientation="Vertical" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+
+                <Grid x:Name="gridFaceDisplay" VerticalAlignment="Stretch" Width="1280" Height="720" >
+                    <Image x:Name="cameraDisplay" HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="UniformToFill"/>
+
+                    <Image x:Name="logoBackground" Margin="40,40,40,85" Width="auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                            Height="auto" Source="img\logoEmotionApp.PNG" Visibility="Visible"/>
+
+                    <EmotionApp:CanvasControl x:Name="canvas" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Grid>
+            </StackPanel>
+        </Grid>
+
+        <DockPanel VerticalAlignment="Bottom">
+            <DockPanel.Background>
+                <SolidColorBrush Color="Gray" Opacity="0.2"/>
+            </DockPanel.Background>
+
+            <Grid HorizontalAlignment="Center">
+                <GroupBox Margin="0,5,0,0"  Height="40" VerticalAlignment="Stretch" BorderBrush="Transparent" BorderThickness="0">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Button x:Name="btnStartCamera" HorizontalAlignment="Center" Margin="0,0,5,0" VerticalAlignment="Top" Width="80" Content="Iniciar" />
+                        <Button x:Name="btnStopCamera" HorizontalAlignment="Center" Margin="0,0,5,0" VerticalAlignment="Top" Width="80" Content="Parar" />
+                        <Button x:Name="btnExit" HorizontalAlignment="Center" Margin="0,0,5,0" VerticalAlignment="Bottom" Width="80" Content="Sair" />
+                    </StackPanel>
+                </GroupBox>
+            </Grid>
+        </DockPanel>
+    </Grid>
+</Window>
