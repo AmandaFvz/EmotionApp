@@ -15,7 +15,7 @@ namespace EmotionApp
         {
             String classifier_name = SplitCamelCase(((String)value));
             classifier_name = classifier_name.ToLower().Replace(" ", "_");
-            return new Uri("c:\\Users/Vinicius/Documents/TCC/EmotionApp/EmotionApp/resources/" + classifier_name + "." + ((String)parameter));
+            return new Uri("C:\\Users\\Vinicius\\Documents\\repoTCC\\EmotionApp\\EmotionApp\\Resources\\" + classifier_name + "." + ((String)parameter));
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

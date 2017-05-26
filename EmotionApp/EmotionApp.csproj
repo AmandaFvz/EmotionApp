@@ -52,20 +52,25 @@
       <HintPath>..\..\..\..\..\..\..\..\Program Files\Affectiva\AffdexSDK\bin\release\Affdex.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
-    <Reference Include="MigraDoc.DocumentObjectModel">
-      <HintPath>..\..\..\GDI+\MigraDoc.DocumentObjectModel.dll</HintPath>
+    <Reference Include="MigraDoc.DocumentObjectModel, Version=1.31.3066.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\GDI+\MigraDoc.DocumentObjectModel.dll</HintPath>
     </Reference>
-    <Reference Include="MigraDoc.Rendering">
-      <HintPath>..\..\..\GDI+\MigraDoc.Rendering.dll</HintPath>
+    <Reference Include="MigraDoc.Rendering, Version=1.31.3066.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\GDI+\MigraDoc.Rendering.dll</HintPath>
     </Reference>
-    <Reference Include="MigraDoc.RtfRendering">
-      <HintPath>..\..\..\GDI+\MigraDoc.RtfRendering.dll</HintPath>
+    <Reference Include="MigraDoc.RtfRendering, Version=1.31.3066.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\GDI+\MigraDoc.RtfRendering.dll</HintPath>
     </Reference>
-    <Reference Include="PdfSharp">
-      <HintPath>..\..\..\GDI+\PdfSharp.dll</HintPath>
+    <Reference Include="PdfSharp, Version=1.31.1789.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\GDI+\PdfSharp.dll</HintPath>
     </Reference>
-    <Reference Include="PdfSharp.Charting">
-      <HintPath>..\..\..\GDI+\PdfSharp.Charting.dll</HintPath>
+    <Reference Include="PdfSharp.Charting, Version=1.31.1789.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\GDI+\PdfSharp.Charting.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -158,6 +163,12 @@
     <Content Include="affdex-native.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Resource Include="Resources\00.png" />
+    <Resource Include="Resources\01.png" />
+    <Resource Include="Resources\10.png" />
+    <Resource Include="Resources\11.png" />
+    <Resource Include="Resources\20.png" />
+    <Resource Include="Resources\21.png" />
     <Resource Include="img\logoEmotionAppWaterMark.PNG" />
     <Resource Include="Resources\anger.gif" />
     <Resource Include="Resources\anger.jpg" />

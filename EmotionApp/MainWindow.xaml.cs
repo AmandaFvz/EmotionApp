@@ -83,10 +83,10 @@ namespace EmotionApp
                 btnStopCamera.IsEnabled = 
                 btnExit.IsEnabled = true;
 
-                const int cameraId = 0; // usar 10
+                const int cameraId = 0; // usar 10 ??
                 const int numberOfFaces = 1;
-                const int cameraFPS = 30;
-                const int processFPS = 30;
+                const int cameraFPS = 60;
+                const int processFPS = 60;
 
                 Detector = new Affdex.CameraDetector(cameraId, cameraFPS, processFPS, numberOfFaces, Affdex.FaceDetectorMode.SMALL_FACES);
 
@@ -102,6 +102,7 @@ namespace EmotionApp
                 cameraDisplay.Visibility = Visibility.Visible;
                 logoBackground.Visibility = Visibility.Hidden;
                 canvas.Visibility = Visibility.Visible;
+                
             }
             catch (Affdex.AffdexException ex)
             {
@@ -140,10 +141,24 @@ namespace EmotionApp
                     Detector = null;
                 }
 
-                if(canvas.faceInfo.GetEnumerator().MoveNext())
+                String fileName = "";
+                try
+                {
+                    String picturesFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+                    fileName = String.Format("EmotionApp_ScreenShot_{0:MMMM_dd_yyyy_h_mm_ss}.png", DateTime.Now);
+                    fileName = System.IO.Path.Combine(picturesFolder, fileName);
+                    this.TakeScreenShot(fileName);
+                }
+                catch (Exception ex)
+                {
+                    String message = String.Format("EmotionApp error encountered while trying to take a screenshot, details={0}", ex.Message);
+                    ShowExceptionAndShutDown(message);
+                }
+
+                if (canvas.faceInfo.GetEnumerator().MoveNext() || canvas.eFaceInfo.GetEnumerator().MoveNext())
                 {
                     PdfBuilder pdfBuilder = new PdfBuilder();
-                    pdfBuilder.createPdfInfo(canvas.faceInfo, canvas.eFaceInfo);
+                    pdfBuilder.createPdfInfo(canvas.faceInfo, canvas.eFaceInfo, fileName);
                 }
 
                 btnStartCamera.IsEnabled = true;
@@ -154,6 +169,32 @@ namespace EmotionApp
             {
                 String message = String.IsNullOrEmpty(ex.Message) ? "EmotionApp error encountered." : ex.Message;
                 ShowExceptionAndShutDown(message);
+            }
+        }
+
+        private void TakeScreenShot(String fileName)
+        {
+            Rect bounds = VisualTreeHelper.GetDescendantBounds(this);
+            double dpi = 96d;
+            RenderTargetBitmap renderBitmap = new RenderTargetBitmap(370, 300,
+                                                                       dpi, dpi, PixelFormats.Default);
+            Size size = new Size(370, 300);
+
+            DrawingVisual dv = new DrawingVisual();
+            using (DrawingContext dc = dv.RenderOpen())
+            {
+                VisualBrush vb = new VisualBrush(this);
+                dc.DrawRectangle(vb, null, new Rect(new Point(), size));
+            }
+
+            renderBitmap.Render(dv);
+
+            PngBitmapEncoder encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(renderBitmap));
+
+            using (FileStream file = File.Create(fileName))
+            {
+                encoder.Save(file);
             }
         }
 

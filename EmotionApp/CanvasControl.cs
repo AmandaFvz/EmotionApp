@@ -27,8 +27,22 @@ namespace EmotionApp
             Faces = new Dictionary<int, Affdex.Face>();
             MetricNames = new StringCollection();
             upperConverter = new NameUpperCaseConverterUtil();
+            appImgs = new Dictionary<string, BitmapImage>();
+
             maxTxtWidth = 0;
             maxTxtHeight = 0;
+
+            var genderVar = Enum.GetValues(typeof(Affdex.Gender));
+            foreach (int genderVal in genderVar)
+            {
+                for (int g = 0; g <= 1; g++)
+                {
+                    string name = ConcatInt(genderVal, g);
+                    BitmapImage img = loadImage(name);
+                    appImgs.Add(name, img);
+                }
+
+            }
         }
 
         public double XScale { get; set; }
@@ -42,6 +56,9 @@ namespace EmotionApp
 
         private const int fpRadius = 2;
 
+        bool gender = false;
+        bool age = false;
+
         private SolidColorBrush pointBrush;
         private SolidColorBrush boundingBrush;
         private Pen boundingPen;
@@ -50,12 +67,17 @@ namespace EmotionApp
 
         public Dictionary<int, Affdex.Face> Faces { get; set; }
         public Dictionary<string, string> faceInfo;
-        public Dictionary<string, List<int>> eFaceInfo;
+        public Dictionary<string, int> eFaceInfo;
+        private Dictionary<string, BitmapImage> appImgs;
 
         protected override void OnRender(System.Windows.Media.DrawingContext dc)
         {
-            faceInfo = new Dictionary<string, string>();
-            eFaceInfo = new Dictionary<string, List<int>>();
+            faceInfo = null;
+            faceInfo  = new Dictionary<string, string>();
+            eFaceInfo = new Dictionary<string, int>();
+
+            
+            int count = 1;
 
             //For each face
             foreach (KeyValuePair<int, Affdex.Face> pair in Faces)
@@ -81,11 +103,14 @@ namespace EmotionApp
                 //Draw BoundingBox
                 dc.DrawRectangle(null, boundingPen, new System.Windows.Rect(tl, br));
 
+                // Desenha aparencia
+                BitmapImage img = appImgs[ConcatInt((int)face.Appearance.Gender, (int)face.Appearance.Glasses)];
+                double imgRatio = ((br.Y - tl.Y) * 0.3) / img.Width;
+                double imgH = img.Height * imgRatio;
+                dc.DrawImage(img, new System.Windows.Rect(br.X + 5, br.Y - imgH, img.Width * imgRatio, imgH));
+
                 double padding = (bl.Y - tl.Y) / MetricNames.Count;
                 double startY = tl.Y - padding;
-                bool gender = false;
-                bool age = false;
-                int count = 1;
                 foreach (string metric in MetricNames)
                 {
                     double width = maxTxtWidth;
@@ -103,40 +128,54 @@ namespace EmotionApp
 
                     value = Math.Abs(value);
 
-                    if(!gender)
+                    if (!faceInfo.ContainsKey("Genero: "))
                     {
                         
                         faceInfo.Add("Genero: ", face.Appearance.Gender.ToString());
                         gender = true;
                         
                     }
-
-                    if (!age)
+                    
+                    if (!faceInfo.ContainsKey("Idade: "))
                     {
                        
                         faceInfo.Add("Idade: ", face.Appearance.Age.ToString());
                         age = true;
                         
                     }
+                    
 
-                    if (info != null && info.ToString().Equals("Smile"))
+                    if (value > 0)
                     {
-                        if (value > 5)
+                        
+                        string[] items = info.ToString().Split(new String[] { " " }, 2, StringSplitOptions.None); 
+                        if (!eFaceInfo.ContainsKey(items[1]))
                         {
-
-                            string[] items = info.ToString().Split(new String[] { " " }, 2, StringSplitOptions.None); 
-                            if (!eFaceInfo.ContainsKey(items[1]))
-                            {
-                                eFaceInfo.Add(items[1], new List<int> { count++ });
-                            }
-                            else
-                            {
-                                eFaceInfo[items[1]].Add(count);
-                            }
+                            eFaceInfo.Add(items[1], count);
+                        }
+                        else
+                        {
+                            eFaceInfo[items[1]] = count++;
                         }
                     }
                 }
             }
+        }
+
+        private BitmapImage loadImage(string name, string extension = "png")
+        {
+            NameConverterUtil conv = new NameConverterUtil();
+            var pngURI = conv.Convert(name, null, extension, null);
+            var img = new BitmapImage();
+            img.BeginInit();
+            img.UriSource = (Uri)pngURI;
+            img.EndInit();
+            return img;
+        }
+
+        private string ConcatInt(int x, int y)
+        {
+            return String.Format("{0}{1}", x, y);
         }
 
         public String NameMappings(String classifierName)
