@@ -56,9 +56,6 @@ namespace EmotionApp
 
         private const int fpRadius = 2;
 
-        bool gender = false;
-        bool age = false;
-
         private SolidColorBrush pointBrush;
         private SolidColorBrush boundingBrush;
         private Pen boundingPen;
@@ -75,9 +72,8 @@ namespace EmotionApp
             faceInfo = null;
             faceInfo  = new Dictionary<string, string>();
             eFaceInfo = new Dictionary<string, int>();
-
             
-            int count = 1;
+            int count = 0;
 
             //For each face
             foreach (KeyValuePair<int, Affdex.Face> pair in Faces)
@@ -131,31 +127,33 @@ namespace EmotionApp
                     if (!faceInfo.ContainsKey("Genero: "))
                     {
                         
-                        faceInfo.Add("Genero: ", face.Appearance.Gender.ToString());
-                        gender = true;
+                        faceInfo.Add("Genero: ", face.Appearance.Gender.ToString().Equals("Female") ? "Feminino" : "Masculino");
                         
                     }
                     
                     if (!faceInfo.ContainsKey("Idade: "))
                     {
-                       
-                        faceInfo.Add("Idade: ", face.Appearance.Age.ToString());
-                        age = true;
+                        
+                        faceInfo.Add("Idade: ", HelpUtils.getAgeString(face.Appearance.Age.ToString()));
                         
                     }
-                    
+
+                    value = Math.Abs(value);
 
                     if (value > 0)
                     {
                         
-                        string[] items = info.ToString().Split(new String[] { " " }, 2, StringSplitOptions.None); 
-                        if (!eFaceInfo.ContainsKey(items[1]))
+                        string[] items = info.ToString().Split(new String[] { " " }, 2, StringSplitOptions.None);
+                        string key = HelpUtils.getMetricString(items[1]);
+
+                        
+                        if (!eFaceInfo.ContainsKey(key))
                         {
-                            eFaceInfo.Add(items[1], count);
+                            eFaceInfo.Add(key, count);
                         }
                         else
                         {
-                            eFaceInfo[items[1]] = count++;
+                            eFaceInfo[key] = count++;
                         }
                     }
                 }

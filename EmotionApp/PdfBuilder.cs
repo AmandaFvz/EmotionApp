@@ -107,13 +107,15 @@ namespace EmotionApp
 
             graph.DrawImage(scheenShot, pdfPage.Width / 2, position + 100);
 
-            Chart chart = PieChart(xseries, series);
-            ChartFrame chartFrame = new ChartFrame();
-            chartFrame.Location = new XPoint(20, position + 350);
-            chartFrame.Size = new XSize(220, 220);
-            chartFrame.Add(chart);
+            graph.DrawString("Gráfico: ", sectionFont, XBrushes.Black, 25, position + 325);
 
-            chartFrame.Draw(graph);
+            //Chart chart = PieChart(xseries, series);
+            //ChartFrame chartFrame = new ChartFrame();
+            //chartFrame.Location = new XPoint(15, position + 350);
+            ///chartFrame.Size = new XSize(250, 250);
+            //chartFrame.Add(chart);
+
+            ///chartFrame.Draw(graph);
 
             String pdfFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             String fileName = String.Format("EmotionApp_Report_{0:MMMM_dd_yyyy_h_mm_ss}.pdf", DateTime.Now);

@@ -30,11 +30,6 @@ namespace EmotionApp
 
         private StringCollection EnabledClassifiers { get; set; }
 
-        private int DrawSkipCount { get; set; }
-
-        private bool ShowFacePoints { get; set; }
-        private bool ShowMetrics { get; set; }
-
         public MainWindow()
         {
             InitializeComponent();
@@ -229,30 +224,14 @@ namespace EmotionApp
             Detector.setDetectAllExpressions(false);
             Detector.setDetectGender(true);
             Detector.setDetectAge(true);
-
-            //Detector.setDetectAttention(true);
-            //Detector.setDetectBrowFurrow(true);
-            //Detector.setDetectBrowRaise(true);
-            //Detector.setDetectChinRaise(true);
-            //Detector.setDetectEyeClosure(true);
-            //Detector.setDetectInnerBrowRaise(true);
-            //Detector.setDetectLipPress(true);
-            //Detector.setDetectLipPucker(true);
-            //Detector.setDetectLipSuck(true);
-            //Detector.setDetectMouthOpen(true);
-            //Detector.setDetectNoseWrinkle(true);
+            
             Detector.setDetectSmile(true);
             Detector.setDetectSmirk(true);
-            //Detector.setDetectUpperLipRaise(true);
-
-            //Detector.setDetectJoy(true);
             Detector.setDetectSadness(true);
             Detector.setDetectAnger(true);
             Detector.setDetectDisgust(true);
             Detector.setDetectSurprise(true);
             Detector.setDetectFear(true);
-            Detector.setDetectValence(true);
-            Detector.setDetectContempt(true);
 
         }
 
@@ -299,12 +278,10 @@ namespace EmotionApp
                 try
                 {
                     // Update the Image control from the UI thread
-                    //cameraDisplay.Source = rtb;
                     cameraDisplay.Source = ConstructImage(image.getBGRByteArray(), image.getWidth(), image.getHeight());
 
                     canvas.Faces = new Dictionary<int, Affdex.Face>();
                     canvas.InvalidateVisual();
-                    DrawSkipCount = 0;
 
                     // Allow N successive OnCapture callbacks before the FacePoint drawing canvas gets cleared.
                     if (image != null)
@@ -338,7 +315,6 @@ namespace EmotionApp
                             canvas.XScale = canvas.Width / image.getWidth();
                             canvas.YScale = canvas.Height / image.getHeight();
                             canvas.InvalidateVisual();
-                            DrawSkipCount = 0;
                         }
                     }));
                 }
