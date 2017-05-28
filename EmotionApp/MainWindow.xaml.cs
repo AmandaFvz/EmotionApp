@@ -131,8 +131,6 @@ namespace EmotionApp
                 btnStartCamera.IsEnabled = true;
                 btnStopCamera.IsEnabled = false;
 
-                
-
             }
             catch (Exception ex)
             {

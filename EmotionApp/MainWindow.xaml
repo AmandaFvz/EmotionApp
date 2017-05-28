@@ -40,7 +40,7 @@
                 <GroupBox Margin="0,5,0,0"  Height="40" VerticalAlignment="Stretch" BorderBrush="Transparent" BorderThickness="0">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                         <Button x:Name="btnStartCamera" HorizontalAlignment="Center" Margin="0,0,5,0" VerticalAlignment="Top" Width="80" Content="Iniciar" />
-                        <Button x:Name="btnStopCamera" HorizontalAlignment="Center" Margin="0,0,5,0" VerticalAlignment="Top" Width="80" Content="Parar" />
+                        <Button x:Name="btnStopCamera" HorizontalAlignment="Center" Margin="0,0,5,0" VerticalAlignment="Top" Width="128" Content="Parar e Gerar Relatório" />
                         <Button x:Name="btnExit" HorizontalAlignment="Center" Margin="0,0,5,0" VerticalAlignment="Bottom" Width="80" Content="Sair" />
                     </StackPanel>
                 </GroupBox>
