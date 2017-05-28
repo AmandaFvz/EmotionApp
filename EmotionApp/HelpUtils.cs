@@ -50,13 +50,9 @@ namespace EmotionApp
         public static string getMetricString(string metricAffedex)
         {
             string metrica = "";
-            if (metricAffedex.Equals("Smile"))
+            if (metricAffedex.Equals("Joy"))
             {
-                metrica = "Sorriso";
-            }
-            else if (metricAffedex.Equals("Smirk"))
-            {
-                metrica = "Sorriso desdenhoso";
+                metrica = "Alegria";
             }
             else if (metricAffedex.Equals("Fear"))
             {
@@ -66,7 +62,7 @@ namespace EmotionApp
             {
                 metrica = "Surpresa";
             }
-            else if (metricAffedex.Equals("Digust"))
+            else if (metricAffedex.Equals("Disgust"))
             {
                 metrica = "Nojo";
             }

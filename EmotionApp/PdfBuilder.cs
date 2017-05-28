@@ -64,7 +64,7 @@ namespace EmotionApp
             {
                 if(entry.Key.Contains("Genero"))
                 {
-                    graph.DrawString(entry.Key, sectionFont, XBrushes.Black,
+                    graph.DrawString(entry.Key + ": ", sectionFont, XBrushes.Black,
                         20, position + 75);
                     graph.DrawString(entry.Value, bodyFont, XBrushes.Black,
                         40, position + 100);
@@ -73,7 +73,7 @@ namespace EmotionApp
 
                 if (entry.Key.Contains("Idade"))
                 {
-                    graph.DrawString(entry.Key, sectionFont, XBrushes.Black,
+                    graph.DrawString(entry.Key + ": ", sectionFont, XBrushes.Black,
                         20, position + 125);
                     graph.DrawString(entry.Value, bodyFont, XBrushes.Black,
                         40, position + 150);
@@ -83,19 +83,13 @@ namespace EmotionApp
 
             graph.DrawLine(pen, 5, position + 175, (pdfPage.Width / 2) - 5, position + 175);
 
-            graph.DrawString("Emoções/Expressões analisadas: ", sectionFont, XBrushes.Black, 20, position + 200);
+            graph.DrawString("Emoções detectadas: ", sectionFont, XBrushes.Black, 20, position + 200);
 
             int i = 0;
             List<string> xseries = new List<string>();
             List<double> series = new List<double>();
             foreach (KeyValuePair<string, int> eEntry in eFaceInfo)
             {
-               // int count = 0;
-                //foreach (int value in eEntry.Value)
-               // {
-                    //count += value;
-               // }
-
                 xseries.Add(eEntry.Key);
                 series.Add((double)eEntry.Value);
 
@@ -105,17 +99,18 @@ namespace EmotionApp
                 i += 12;
             }
 
-            graph.DrawImage(scheenShot, pdfPage.Width / 2, position + 100);
+            graph.DrawString("Imagem da pessoa analisada", sectionFont, XBrushes.Black, (pdfPage.Width / 2) + 50, position + 75);
+            graph.DrawImage(scheenShot, pdfPage.Width / 2, position + 90);
 
             graph.DrawString("Gráfico: ", sectionFont, XBrushes.Black, 25, position + 325);
 
             //Chart chart = PieChart(xseries, series);
             //ChartFrame chartFrame = new ChartFrame();
             //chartFrame.Location = new XPoint(15, position + 350);
-            ///chartFrame.Size = new XSize(250, 250);
+            //chartFrame.Size = new XSize(350, 350);
             //chartFrame.Add(chart);
 
-            ///chartFrame.Draw(graph);
+            //chartFrame.Draw(graph);
 
             String pdfFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             String fileName = String.Format("EmotionApp_Report_{0:MMMM_dd_yyyy_h_mm_ss}.pdf", DateTime.Now);

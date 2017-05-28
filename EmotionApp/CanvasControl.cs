@@ -28,6 +28,8 @@ namespace EmotionApp
             MetricNames = new StringCollection();
             upperConverter = new NameUpperCaseConverterUtil();
             appImgs = new Dictionary<string, BitmapImage>();
+            eFaceInfo = new Dictionary<string, int>();
+            faceInfo = new Dictionary<string, string>();
 
             maxTxtWidth = 0;
             maxTxtHeight = 0;
@@ -38,7 +40,8 @@ namespace EmotionApp
                 for (int g = 0; g <= 1; g++)
                 {
                     string name = ConcatInt(genderVal, g);
-                    BitmapImage img = loadImage(name);
+                    genderImgName = name;
+                    BitmapImage img = loadImg(name);
                     appImgs.Add(name, img);
                 }
 
@@ -67,100 +70,202 @@ namespace EmotionApp
         public Dictionary<string, int> eFaceInfo;
         private Dictionary<string, BitmapImage> appImgs;
 
+        string genderImgName;
+
+        int countSmile = 0;
+        int countSurprise = 0;
+        int countFear = 0;
+        int countDisgust = 0;
+        int countSad = 0;
+        int countAnger = 0;
+
+        int firstTime = 0;
+        bool drawApp = true;
+
         protected override void OnRender(System.Windows.Media.DrawingContext dc)
         {
-            faceInfo = null;
-            faceInfo  = new Dictionary<string, string>();
-            eFaceInfo = new Dictionary<string, int>();
             
-            int count = 0;
-
-            //For each face
             foreach (KeyValuePair<int, Affdex.Face> pair in Faces)
             {
                 Affdex.Face face = pair.Value;
 
-                var featurePoints = face.FeaturePoints;
-
-                //Calculate bounding box corners coordinates.
-                System.Windows.Point tl = new System.Windows.Point(featurePoints.Min(r => r.X) * XScale,
-                                                   featurePoints.Min(r => r.Y) * YScale);
-                System.Windows.Point br = new System.Windows.Point(featurePoints.Max(r => r.X) * XScale,
-                                                                   featurePoints.Max(r => r.Y) * YScale);
-
+                var fPoints = face.FeaturePoints;
+                
+                System.Windows.Point tl = new System.Windows.Point(fPoints.Min(r => r.X) * XScale, fPoints.Min(r => r.Y) * YScale);
+                System.Windows.Point br = new System.Windows.Point(fPoints.Max(r => r.X) * XScale, fPoints.Max(r => r.Y) * YScale);
                 System.Windows.Point bl = new System.Windows.Point(tl.X, br.Y);
 
-                // Draw points
-                foreach (var point in featurePoints)
+                foreach (var point in fPoints)
                 {
                     dc.DrawEllipse(pointBrush, null, new System.Windows.Point(point.X * XScale, point.Y * YScale), fpRadius, fpRadius);
                 }
-
-                //Draw BoundingBox
+                
                 dc.DrawRectangle(null, boundingPen, new System.Windows.Rect(tl, br));
 
                 // Desenha aparencia
-                BitmapImage img = appImgs[ConcatInt((int)face.Appearance.Gender, (int)face.Appearance.Glasses)];
-                double imgRatio = ((br.Y - tl.Y) * 0.3) / img.Width;
-                double imgH = img.Height * imgRatio;
-                dc.DrawImage(img, new System.Windows.Rect(br.X + 5, br.Y - imgH, img.Width * imgRatio, imgH));
-
-                double padding = (bl.Y - tl.Y) / MetricNames.Count;
-                double startY = tl.Y - padding;
-                foreach (string metric in MetricNames)
+                if(drawApp)
                 {
-                    double width = maxTxtWidth;
-                    double height = maxTxtHeight;
-                    float value = -1;
+                    BitmapImage img = appImgs[ConcatInt((int)face.Appearance.Gender, (int)face.Appearance.Glasses)];
+                    double imgRatio = ((br.Y - tl.Y) * 0.3) / img.Width;
+                    double imgH = img.Height * imgRatio;
+                    dc.DrawImage(img, new System.Windows.Rect(br.X + 5, br.Y - imgH, img.Width * imgRatio, imgH));
+
+                }
+
+
+                foreach (string metrica in MetricNames)
+                {
+                    float valor = -1;
                     PropertyInfo info = null;
-                    if ((info = face.Expressions.GetType().GetProperty(NameMappings(metric))) != null)
+                    if ((info = face.Expressions.GetType().GetProperty(NameMap(metrica))) != null)
                     {
-                        value = (float)info.GetValue(face.Expressions, null);
+                        valor = (float)info.GetValue(face.Expressions, null);
                     }
-                    else if ((info = face.Emotions.GetType().GetProperty(NameMappings(metric))) != null)
+                    else if ((info = face.Emotions.GetType().GetProperty(NameMap(metrica))) != null)
                     {
-                        value = (float)info.GetValue(face.Emotions, null);
-                    }
-
-                    value = Math.Abs(value);
-
-                    if (!faceInfo.ContainsKey("Genero: "))
-                    {
-                        
-                        faceInfo.Add("Genero: ", face.Appearance.Gender.ToString().Equals("Female") ? "Feminino" : "Masculino");
-                        
-                    }
-                    
-                    if (!faceInfo.ContainsKey("Idade: "))
-                    {
-                        
-                        faceInfo.Add("Idade: ", HelpUtils.getAgeString(face.Appearance.Age.ToString()));
-                        
+                        valor = (float)info.GetValue(face.Emotions, null);
                     }
 
-                    value = Math.Abs(value);
-
-                    if (value > 0)
+                    if (faceInfo.ContainsKey("Genero") && firstTime == 0)
                     {
-                        
-                        string[] items = info.ToString().Split(new String[] { " " }, 2, StringSplitOptions.None);
-                        string key = HelpUtils.getMetricString(items[1]);
 
-                        
-                        if (!eFaceInfo.ContainsKey(key))
+                        faceInfo.Remove("Genero");
+
+                    }
+
+                    if ((int)face.Appearance.Gender > 0)
+                    {
+                        faceInfo.Add("Genero", (int)face.Appearance.Gender == 2 ? "Feminino" : "Masculino");
+                    }
+
+                    if (faceInfo.ContainsKey("Idade") && firstTime == 0)
+                    {
+
+                        faceInfo.Remove("Idade");
+
+                    }
+
+                    if (!face.Appearance.Age.ToString().Contains("Unknow") && firstTime == 0)
+                    {
+
+                        faceInfo.Add("Idade", HelpUtils.getAgeString(face.Appearance.Age.ToString()));
+
+                    }
+
+
+                    if (metrica.Equals("Joy") && valor > 99)
+                    {
+
+                        countSmile++;
+
+                        string key = HelpUtils.getMetricString(metrica);
+
+                        if(eFaceInfo.ContainsKey(key))
                         {
-                            eFaceInfo.Add(key, count);
+                            eFaceInfo.Remove(key);
+
+                            eFaceInfo.Add(key, countSmile);
+                        } 
+                        else
+                        {
+                            eFaceInfo.Add(key, countSmile);
+                        }
+                    }
+
+                    if (metrica.Equals("Anger") && valor > 37)
+                    {
+                        countAnger++;
+
+                        string key = HelpUtils.getMetricString(metrica);
+
+                        if (eFaceInfo.ContainsKey(key))
+                        {
+                            eFaceInfo.Remove(key);
+
+                            eFaceInfo.Add(key, countAnger);
                         }
                         else
                         {
-                            eFaceInfo[key] = count++;
+                            eFaceInfo.Add(key, countAnger);
+                        }
+                    }
+
+                    if (metrica.Equals("Sadness") && valor > 97)
+                    {
+                        countSad++;
+
+                        string key = HelpUtils.getMetricString(metrica);
+
+                        if (eFaceInfo.ContainsKey(key))
+                        {
+                            eFaceInfo.Remove(key);
+
+                            eFaceInfo.Add(key, countSad);
+                        }
+                        else
+                        {
+                            eFaceInfo.Add(key, countSad);
+                        }
+                    }
+
+                    if (metrica.Equals("Surprise") && valor > 96)
+                    {
+                        countSad++;
+
+                        string key = HelpUtils.getMetricString(metrica);
+
+                        if (eFaceInfo.ContainsKey(key))
+                        {
+                            eFaceInfo.Remove(key);
+
+                            eFaceInfo.Add(key, countSad);
+                        }
+                        else
+                        {
+                            eFaceInfo.Add(key, countSad);
+                        }
+                    }
+
+                    if (metrica.Equals("Fear") && valor > 96)
+                    {
+                        countSad++;
+
+                        string key = HelpUtils.getMetricString(metrica);
+
+                        if (eFaceInfo.ContainsKey(key))
+                        {
+                            eFaceInfo.Remove(key);
+
+                            eFaceInfo.Add(key, countSad);
+                        }
+                        else
+                        {
+                            eFaceInfo.Add(key, countSad);
+                        }
+                    }
+
+                    if (metrica.Equals("Disgust") && valor > 96)
+                    {
+                        countSad++;
+
+                        string key = HelpUtils.getMetricString(metrica);
+
+                        if (eFaceInfo.ContainsKey(key))
+                        {
+                            eFaceInfo.Remove(key);
+
+                            eFaceInfo.Add(key, countSad);
+                        }
+                        else
+                        {
+                            eFaceInfo.Add(key, countSad);
                         }
                     }
                 }
             }
         }
 
-        private BitmapImage loadImage(string name, string extension = "png")
+        private BitmapImage loadImg(string name, string extension = "png")
         {
             NameConverterUtil conv = new NameConverterUtil();
             var pngURI = conv.Convert(name, null, extension, null);
@@ -176,7 +281,7 @@ namespace EmotionApp
             return String.Format("{0}{1}", x, y);
         }
 
-        public String NameMappings(String classifierName)
+        public String NameMap(String classifierName)
         {
             if (classifierName == "Frown")
             {

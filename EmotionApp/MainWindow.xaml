@@ -12,8 +12,8 @@
         MaxHeight="720" MaxWidth="1280"
         ResizeMode="NoResize"
         
-        Loaded="Window_Loaded"
-        Closing="Window_Closing">
+        Loaded="winLoaded"
+        Closing="winClosing">
 
     <Grid x:Name="gridMainDisplay" Margin="0,0,0,0">
         <Grid x:Name="gridContentDisplay" DockPanel.Dock="Top">
@@ -21,9 +21,9 @@
             <StackPanel x:Name="stackPanelImage" Orientation="Vertical" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
 
                 <Grid x:Name="gridFaceDisplay" VerticalAlignment="Stretch" Width="1280" Height="720" >
-                    <Image x:Name="cameraDisplay" HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="UniformToFill"/>
+                    <Image x:Name="camera" HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="UniformToFill" Visibility="Hidden"/>
 
-                    <Image x:Name="logoBackground" Margin="40,40,40,85" Width="auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                    <Image x:Name="logo" Margin="40,40,40,85" Width="auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
                             Height="auto" Source="img\logoEmotionApp.PNG" Visibility="Visible"/>
 
                     <EmotionApp:CanvasControl x:Name="canvas" HorizontalAlignment="Center" VerticalAlignment="Center"/>

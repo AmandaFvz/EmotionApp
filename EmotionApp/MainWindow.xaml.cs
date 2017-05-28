@@ -17,6 +17,7 @@ using System.Collections.Specialized;
 using System.Reflection;
 using System.IO;
 using System.Management;
+using System.Windows.Threading;
 
 namespace EmotionApp
 {
@@ -28,24 +29,24 @@ namespace EmotionApp
 
         private Affdex.Detector Detector { get; set; }
 
-        private StringCollection EnabledClassifiers { get; set; }
+        private StringCollection classifiersEnable { get; set; }
 
         public MainWindow()
         {
             InitializeComponent();
-            CenterWindowOnScreen();
+            centerWindow();
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        private void winLoaded(object sender, RoutedEventArgs e)
         {
             Detector = null;
 
-            AddClassifiers();
+            addClassifiers();
 
             // mostra o logo
-            logoBackground.Visibility = Visibility.Visible;
+            logo.Visibility = Visibility.Visible;
 
-            canvas.MetricNames = EnabledClassifiers;
+            canvas.MetricNames = classifiersEnable;
 
             // habilita/desabilita botões
             btnStopCamera.IsEnabled = btnExit.IsEnabled = true;
@@ -56,21 +57,16 @@ namespace EmotionApp
             btnStopCamera.Click += btnStopCamera_Click;
             btnExit.Click += btnExit_Click;
 
-            this.ContentRendered += MainWindow_ContentRendered;
+            this.ContentRendered += startCamera;
         }
 
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void winClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            StopCameraProcessing();
+            stopCamera();
             Application.Current.Shutdown();
         }
 
-        void MainWindow_ContentRendered(object sender, EventArgs e)
-        {
-            StartCameraProcessing();
-        }
-
-        private void StartCameraProcessing()
+        private void startCamera(object sender, EventArgs e)
         {
             try
             {
@@ -78,7 +74,7 @@ namespace EmotionApp
                 btnStopCamera.IsEnabled = 
                 btnExit.IsEnabled = true;
 
-                const int cameraId = 0; // usar 10 ??
+                const int cameraId = 0; // usar 1
                 const int numberOfFaces = 1;
                 const int cameraFPS = 60;
                 const int processFPS = 60;
@@ -87,45 +83,41 @@ namespace EmotionApp
 
                 Detector.setClassifierPath("C:\\Program Files\\Affectiva\\AffdexSDK\\data");
 
-                TurnOnClassifiers();
+                setClassifiers();
 
                 Detector.setImageListener(this);
                 Detector.setProcessStatusListener(this);
 
                 Detector.start();
 
-                cameraDisplay.Visibility = Visibility.Visible;
-                logoBackground.Visibility = Visibility.Hidden;
+                camera.Visibility = Visibility.Visible;
+                logo.Visibility = Visibility.Hidden;
                 canvas.Visibility = Visibility.Visible;
-                
+
             }
             catch (Affdex.AffdexException ex)
             {
                 if (!String.IsNullOrEmpty(ex.Message))
                 {
-                    // If this is a camera failure, then reset the application to allow the user to turn on/enable camera
-                    if (ex.Message.Equals("Unable to open webcam."))
+                    if (ex.Message.Equals("Não foi possível abrir a webcam."))
                     {
-                        MessageBoxResult result = MessageBox.Show(ex.Message,
-                                                                "EmotionApp Error",
-                                                                MessageBoxButton.OK,
-                                                                MessageBoxImage.Error);
-                        StopCameraProcessing();
+                        MessageBoxResult result = MessageBox.Show(ex.Message, "EmotionApp Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+                        stopCamera();
                         return;
                     }
                 }
 
-                String message = String.IsNullOrEmpty(ex.Message) ? "EmotionApp error encountered." : ex.Message;
-                ShowExceptionAndShutDown(message);
+                String message = String.IsNullOrEmpty(ex.Message) ? "EmotionApp encontrou um erro." : ex.Message;
+                getExceptions(message);
             }
             catch (Exception ex)
             {
-                String message = String.IsNullOrEmpty(ex.Message) ? "EmotionApp error encountered." : ex.Message;
-                ShowExceptionAndShutDown(message);
+                String message = String.IsNullOrEmpty(ex.Message) ? "EmotionApp encontrou um erro." : ex.Message;
+                getExceptions(message);
             }
         }
 
-        private void StopCameraProcessing()
+        private void stopCamera()
         {
             try
             {
@@ -136,43 +128,24 @@ namespace EmotionApp
                     Detector = null;
                 }
 
-                String fileName = "";
-                try
-                {
-                    String picturesFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
-                    fileName = String.Format("EmotionApp_ScreenShot_{0:MMMM_dd_yyyy_h_mm_ss}.png", DateTime.Now);
-                    fileName = System.IO.Path.Combine(picturesFolder, fileName);
-                    this.TakeScreenShot(fileName);
-                }
-                catch (Exception ex)
-                {
-                    String message = String.Format("EmotionApp error encountered while trying to take a screenshot, details={0}", ex.Message);
-                    ShowExceptionAndShutDown(message);
-                }
-
-                if (canvas.faceInfo.GetEnumerator().MoveNext() || canvas.eFaceInfo.GetEnumerator().MoveNext())
-                {
-                    PdfBuilder pdfBuilder = new PdfBuilder();
-                    pdfBuilder.createPdfInfo(canvas.faceInfo, canvas.eFaceInfo, fileName);
-                }
-
                 btnStartCamera.IsEnabled = true;
                 btnStopCamera.IsEnabled = false;
+
+                
 
             }
             catch (Exception ex)
             {
-                String message = String.IsNullOrEmpty(ex.Message) ? "EmotionApp error encountered." : ex.Message;
-                ShowExceptionAndShutDown(message);
+                String message = String.IsNullOrEmpty(ex.Message) ? "EmotionApp encontrou um erro." : ex.Message;
+                getExceptions(message);
             }
         }
 
-        private void TakeScreenShot(String fileName)
+        private void takeScreenShot(String fileName)
         {
             Rect bounds = VisualTreeHelper.GetDescendantBounds(this);
             double dpi = 96d;
-            RenderTargetBitmap renderBitmap = new RenderTargetBitmap(370, 300,
-                                                                       dpi, dpi, PixelFormats.Default);
+            RenderTargetBitmap renderBitmap = new RenderTargetBitmap(370, 300, dpi, dpi, PixelFormats.Default);
             Size size = new Size(370, 300);
 
             DrawingVisual dv = new DrawingVisual();
@@ -193,40 +166,37 @@ namespace EmotionApp
             }
         }
 
-        private void CenterWindowOnScreen()
+        private void centerWindow()
         {
-            double screenWidth = System.Windows.SystemParameters.PrimaryScreenWidth;
-            double screenHeight = System.Windows.SystemParameters.PrimaryScreenHeight;
-            double windowWidth = this.Width;
-            double windowHeight = this.Height;
-            this.Left = (screenWidth / 2) - (windowWidth / 2);
-            this.Top = (screenHeight / 2) - (windowHeight / 2);
+            double scrWidth = System.Windows.SystemParameters.PrimaryScreenWidth;
+            double scrHeight = System.Windows.SystemParameters.PrimaryScreenHeight;
+            double winWidth = this.Width;
+            double winHeight = this.Height;
+            this.Left = (scrWidth / 2) - (winWidth / 2);
+            this.Top = (scrHeight / 2) - (winHeight / 2);
         }
 
-        private void AddClassifiers()
+        private void addClassifiers()
         {
-            EnabledClassifiers = new StringCollection();
+            classifiersEnable = new StringCollection();
 
-            EnabledClassifiers.Add("Sadness");
-            EnabledClassifiers.Add("Anger");
-            EnabledClassifiers.Add("Disgust");
-            EnabledClassifiers.Add("Surprise");
-            EnabledClassifiers.Add("Fear");
-            EnabledClassifiers.Add("Smile");
-            EnabledClassifiers.Add("Smirk");
+            classifiersEnable.Add("Sadness");
+            classifiersEnable.Add("Anger");
+            classifiersEnable.Add("Disgust");
+            classifiersEnable.Add("Surprise");
+            classifiersEnable.Add("Fear");
+            classifiersEnable.Add("Joy");
         }
 
-        private void TurnOnClassifiers()    
+        private void setClassifiers()    
         {
             // Habilitando classifiers
-
             Detector.setDetectAllEmotions(false);
             Detector.setDetectAllExpressions(false);
             Detector.setDetectGender(true);
             Detector.setDetectAge(true);
             
-            Detector.setDetectSmile(true);
-            Detector.setDetectSmirk(true);
+            Detector.setDetectJoy(true);
             Detector.setDetectSadness(true);
             Detector.setDetectAnger(true);
             Detector.setDetectDisgust(true);
@@ -235,69 +205,60 @@ namespace EmotionApp
 
         }
 
-        private void ShowExceptionAndShutDown(String exceptionMessage)
+        private void getExceptions(String exMsg)
         {
-            MessageBoxResult result = MessageBox.Show(exceptionMessage,
-                                                        "EmotionApp Error",
-                                                        MessageBoxButton.OK,
-                                                        MessageBoxImage.Error);
+            MessageBoxResult result = MessageBox.Show(exMsg, "EmotionApp Erro", MessageBoxButton.OK, MessageBoxImage.Error);
             this.Dispatcher.BeginInvoke((Action)(() =>
             {
-                StopCameraProcessing();
-                ResetDisplayArea();
+                stopCamera();
+                resetDisplay();
             }));
         }
 
-        private void ResetDisplayArea()
+        private void resetDisplay()
         {
             try
             {
-                // Hide Camera feed;
-                cameraDisplay.Visibility = Visibility.Hidden;
-
-                // Clear any drawn data
+                camera.Visibility = Visibility.Hidden;
+                
                 canvas.Faces = new Dictionary<int, Affdex.Face>();
                 canvas.InvalidateVisual();
-
-                // Show the logo
-                logoBackground.Visibility = Visibility.Visible;
+                
+                logo.Visibility = Visibility.Visible;
 
             }
             catch (Exception ex)
             {
-                String message = String.IsNullOrEmpty(ex.Message) ? "EmotionApp error encountered." : ex.Message;
-                ShowExceptionAndShutDown(message);
+                String msg = String.IsNullOrEmpty(ex.Message) ? "EmotionApp encontrou um erro." : ex.Message;
+                getExceptions(msg);
             }
         }
 
-        private void DrawCapturedImage(Affdex.Frame image)
+        private void drawCapturedImage(Affdex.Frame img)
         {
-            // Update the Image control from the UI thread
             var result = this.Dispatcher.BeginInvoke((Action)(() =>
             {
                 try
                 {
-                    // Update the Image control from the UI thread
-                    cameraDisplay.Source = ConstructImage(image.getBGRByteArray(), image.getWidth(), image.getHeight());
+                    camera.Source = constructImg(img.getBGRByteArray(), img.getWidth(), img.getHeight());
 
                     canvas.Faces = new Dictionary<int, Affdex.Face>();
                     canvas.InvalidateVisual();
-
-                    // Allow N successive OnCapture callbacks before the FacePoint drawing canvas gets cleared.
-                    if (image != null)
+                    
+                    if (img != null)
                     {
-                        image.Dispose();
+                        img.Dispose();
                     }
                 }
                 catch (Exception ex)
                 {
-                    String message = String.IsNullOrEmpty(ex.Message) ? "EmotionApp error encountered." : ex.Message;
-                    ShowExceptionAndShutDown(message);
+                    String message = String.IsNullOrEmpty(ex.Message) ? "EmotionApp encontrou um erro." : ex.Message;
+                    getExceptions(message);
                 }
             }));
         }
 
-        private void DrawData(Affdex.Frame image, Dictionary<int, Affdex.Face> faces)
+        private void drawData(Affdex.Frame image, Dictionary<int, Affdex.Face> faces)
         {
             try
             {
@@ -310,8 +271,8 @@ namespace EmotionApp
                         {
                             
                             canvas.Faces = faces;
-                            canvas.Width = cameraDisplay.ActualWidth;
-                            canvas.Height = cameraDisplay.ActualHeight;
+                            canvas.Width = camera.ActualWidth;
+                            canvas.Height = camera.ActualHeight;
                             canvas.XScale = canvas.Width / image.getWidth();
                             canvas.YScale = canvas.Height / image.getHeight();
                             canvas.InvalidateVisual();
@@ -321,12 +282,12 @@ namespace EmotionApp
             }
             catch (Exception ex)
             {
-                String message = String.IsNullOrEmpty(ex.Message) ? "EmotionApp error encountered." : ex.Message;
-                ShowExceptionAndShutDown(message);
+                String message = String.IsNullOrEmpty(ex.Message) ? "EmotionApp encontrou um erro." : ex.Message;
+                getExceptions(message);
             }
         }
 
-        private BitmapSource ConstructImage(byte[] imageData, int width, int height)
+        private BitmapSource constructImg(byte[] imageData, int width, int height)
         {
             try
             {
@@ -339,8 +300,8 @@ namespace EmotionApp
             }
             catch (Exception ex)
             {
-                String message = String.IsNullOrEmpty(ex.Message) ? "EmotionApp error encountered." : ex.Message;
-                ShowExceptionAndShutDown(message);
+                String message = String.IsNullOrEmpty(ex.Message) ? "EmotionApp encontrou um erro." : ex.Message;
+                getExceptions(message);
             }
 
             return null;
@@ -378,19 +339,30 @@ namespace EmotionApp
         {
             try
             {
-                StartCameraProcessing();
+                startCamera(sender, e);
             }
             catch (Exception ex)
             {
-                String message = String.IsNullOrEmpty(ex.Message) ? "EmotionApp error encountered." : ex.Message;
-                ShowExceptionAndShutDown(message);
+                String message = String.IsNullOrEmpty(ex.Message) ? "EmotionApp encontrou um erro." : ex.Message;
+                getExceptions(message);
             }
         }
 
         private void btnStopCamera_Click(object sender, RoutedEventArgs e)
         {
-            StopCameraProcessing();
-            ResetDisplayArea();
+            String picturesFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+            String fileName = String.Format("EmotionApp_ScreenShot_{0:MMMM_dd_yyyy_h_mm_ss}.png", DateTime.Now);
+            fileName = System.IO.Path.Combine(picturesFolder, fileName);
+            this.takeScreenShot(fileName);
+
+            if (canvas.faceInfo.GetEnumerator().MoveNext() || canvas.eFaceInfo.GetEnumerator().MoveNext())
+            {
+                PdfBuilder pdfBuilder = new PdfBuilder();
+                pdfBuilder.createPdfInfo(canvas.faceInfo, canvas.eFaceInfo, fileName);
+            }
+
+            stopCamera();
+            resetDisplay();
         }
 
         private void btnExit_Click(object sender, RoutedEventArgs e)
@@ -400,18 +372,18 @@ namespace EmotionApp
 
         public void onImageResults(Dictionary<int, Face> faces, Affdex.Frame image)
         {
-            DrawData(image, faces);
+            drawData(image, faces);
         }
 
         public void onImageCapture(Affdex.Frame image)
         {
-            DrawCapturedImage(image);
+            drawCapturedImage(image);
         }
 
         public void onProcessingException(AffdexException ex)
         {
-            String message = String.IsNullOrEmpty(ex.Message) ? "EmotionApp error encountered." : ex.Message;
-            ShowExceptionAndShutDown(message);
+            String message = String.IsNullOrEmpty(ex.Message) ? "EmotionApp encontrou um erro." : ex.Message;
+            getExceptions(message);
         }
 
         public void onProcessingFinished() { }
