@@ -13,7 +13,7 @@ namespace EmotionApp
             string idade = "";
             if (ageAffedex.Contains("18_24"))
             {
-                idade = "De 18 há 24 anos";
+                idade = "De 18 a 24 anos";
             }
             else if (ageAffedex.Contains("18"))
             {
@@ -21,19 +21,19 @@ namespace EmotionApp
             }
             else if (ageAffedex.Contains("25_34"))
             {
-                idade = "De 25 há 34 anos";
+                idade = "De 25 a 34 anos";
             }
             else if (ageAffedex.Contains("35_44"))
             {
-                idade = "De 35 há 44 anos";
+                idade = "De 35 a 44 anos";
             }
             else if (ageAffedex.Contains("45_54"))
             {
-                idade = "De 45 há 54 anos";
+                idade = "De 45 a 54 anos";
             }
             else if (ageAffedex.Contains("55_64"))
             {
-                idade = "De 55 há 64 anos";
+                idade = "De 55 a 64 anos";
             }
             else if (ageAffedex.Contains("65"))
             {

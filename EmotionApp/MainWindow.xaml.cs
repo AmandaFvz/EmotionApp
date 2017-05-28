@@ -194,6 +194,7 @@ namespace EmotionApp
             Detector.setDetectAllEmotions(false);
             Detector.setDetectAllExpressions(false);
             Detector.setDetectGender(true);
+            Detector.setDetectGlasses(true);
             Detector.setDetectAge(true);
             
             Detector.setDetectJoy(true);

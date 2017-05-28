@@ -40,7 +40,6 @@ namespace EmotionApp
                 for (int g = 0; g <= 1; g++)
                 {
                     string name = ConcatInt(genderVal, g);
-                    genderImgName = name;
                     BitmapImage img = loadImg(name);
                     appImgs.Add(name, img);
                 }
@@ -69,8 +68,6 @@ namespace EmotionApp
         public Dictionary<string, string> faceInfo;
         public Dictionary<string, int> eFaceInfo;
         private Dictionary<string, BitmapImage> appImgs;
-
-        string genderImgName;
 
         int countSmile = 0;
         int countSurprise = 0;
@@ -190,7 +187,7 @@ namespace EmotionApp
                         }
                     }
 
-                    if (metrica.Equals("Sadness") && valor > 97)
+                    if (metrica.Equals("Sadness") && valor > 98)
                     {
                         countSad++;
 
@@ -210,7 +207,7 @@ namespace EmotionApp
 
                     if (metrica.Equals("Surprise") && valor > 96)
                     {
-                        countSad++;
+                        countSurprise++;
 
                         string key = HelpUtils.getMetricString(metrica);
 
@@ -218,17 +215,17 @@ namespace EmotionApp
                         {
                             eFaceInfo.Remove(key);
 
-                            eFaceInfo.Add(key, countSad);
+                            eFaceInfo.Add(key, countSurprise);
                         }
                         else
                         {
-                            eFaceInfo.Add(key, countSad);
+                            eFaceInfo.Add(key, countSurprise);
                         }
                     }
 
-                    if (metrica.Equals("Fear") && valor > 96)
+                    if (metrica.Equals("Fear") && valor > 66)
                     {
-                        countSad++;
+                        countFear++;
 
                         string key = HelpUtils.getMetricString(metrica);
 
@@ -236,17 +233,17 @@ namespace EmotionApp
                         {
                             eFaceInfo.Remove(key);
 
-                            eFaceInfo.Add(key, countSad);
+                            eFaceInfo.Add(key, countFear);
                         }
                         else
                         {
-                            eFaceInfo.Add(key, countSad);
+                            eFaceInfo.Add(key, countFear);
                         }
                     }
 
                     if (metrica.Equals("Disgust") && valor > 96)
                     {
-                        countSad++;
+                        countDisgust++;
 
                         string key = HelpUtils.getMetricString(metrica);
 
@@ -254,11 +251,11 @@ namespace EmotionApp
                         {
                             eFaceInfo.Remove(key);
 
-                            eFaceInfo.Add(key, countSad);
+                            eFaceInfo.Add(key, countDisgust);
                         }
                         else
                         {
-                            eFaceInfo.Add(key, countSad);
+                            eFaceInfo.Add(key, countDisgust);
                         }
                     }
                 }
