@@ -12,7 +12,7 @@ namespace EmotionApp
 {
     public class PdfBuilder
     {
-        public void createPdfInfo(Dictionary<string, string> faceInfo, Dictionary<string, int> eFaceInfo, String screenShotFileName)
+        public void createPdfInfo(Dictionary<string, string> faceInfo, Dictionary<string, int> eFaceInfo, String screenShotFileName, bool isOffEnable, int comboBoxValue)
         {
             PdfDocument pdf = new PdfDocument();
 
@@ -21,9 +21,17 @@ namespace EmotionApp
             XPen pen = new XPen(XColor.FromName("black"));
             XGraphics graph = XGraphics.FromPdfPage(pdfPage);
             XFont bodyFont = new XFont("Calibri", 15, XFontStyle.Regular);
-            XImage templateRel = XImage.FromFile("C:\\Users\\Vinicius\\Documents\\repoTCC\\EmotionApp\\EmotionApp\\img\\EmotionApp.png");
+            XImage templateRel;
+            if (!isOffEnable)
+            {
+                templateRel = XImage.FromFile("C:\\Users\\Vinicius\\Documents\\repoTCC\\EmotionApp\\EmotionApp\\img\\EmotionApp.png");
+            }
+            else
+            {
+                templateRel = XImage.FromFile("C:\\Users\\Vinicius\\Documents\\repoTCC\\EmotionApp\\EmotionApp\\img\\EmotionAppWithoutAge.png");
+            }
 
-            String picturesFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+                String picturesFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
             XImage scheenShot = XImage.FromFile(screenShotFileName);
 
             graph.DrawImage(templateRel, 0, 0, pdfPage.Width, pdfPage.Height);
@@ -40,11 +48,15 @@ namespace EmotionApp
 
                 }
 
-                if (entry.Key.Contains("Idade"))
+                if(!isOffEnable)
                 {
-                    graph.DrawString(entry.Value, bodyFont, XBrushes.Black,
-                        80, position + 75);
 
+                    if (entry.Key.Contains("Idade"))
+                    {
+                        graph.DrawString(HelpUtils.getAgeString(entry.Value, comboBoxValue), bodyFont, XBrushes.Black,
+                            80, position + 75);
+
+                    }
                 }
             }
 

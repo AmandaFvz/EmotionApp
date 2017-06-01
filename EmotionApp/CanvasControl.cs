@@ -79,6 +79,9 @@ namespace EmotionApp
         int firstTime = 0;
         bool drawApp = true;
 
+        bool age = false;
+        bool gender = false;
+
         protected override void OnRender(System.Windows.Media.DrawingContext dc)
         {
             
@@ -123,34 +126,36 @@ namespace EmotionApp
                         valor = (float)info.GetValue(face.Emotions, null);
                     }
 
-                    if (faceInfo.ContainsKey("Genero") && firstTime == 0)
+                    if (faceInfo.ContainsKey("Genero") && !gender)
                     {
 
                         faceInfo.Remove("Genero");
 
                     }
 
-                    if ((int)face.Appearance.Gender > 0)
+                    if ((int)face.Appearance.Gender > 0 && !gender)
                     {
                         faceInfo.Add("Genero", (int)face.Appearance.Gender == 2 ? "Feminino" : "Masculino");
+                        gender = true;
                     }
 
-                    if (faceInfo.ContainsKey("Idade") && firstTime == 0)
+                    if (faceInfo.ContainsKey("Idade") && !age)
                     {
 
                         faceInfo.Remove("Idade");
 
                     }
 
-                    if (!face.Appearance.Age.ToString().Contains("Unknow") && firstTime == 0)
+                    if (!face.Appearance.Age.ToString().Contains("Unknow") && !age)
                     {
 
-                        faceInfo.Add("Idade", HelpUtils.getAgeString(face.Appearance.Age.ToString()));
+                        faceInfo.Add("Idade", face.Appearance.Age.ToString());
+                        age = true;
 
                     }
 
 
-                    if (metrica.Equals("Joy") && valor > 99)
+                    if (metrica.Equals("Joy") && valor > 89)
                     {
 
                         countSmile++;
@@ -205,7 +210,7 @@ namespace EmotionApp
                         }
                     }
 
-                    if (metrica.Equals("Surprise") && valor > 96)
+                    if (metrica.Equals("Surprise") && valor > 86)
                     {
                         countSurprise++;
 
@@ -241,7 +246,7 @@ namespace EmotionApp
                         }
                     }
 
-                    if (metrica.Equals("Disgust") && valor > 96)
+                    if (metrica.Equals("Disgust") && valor > 88)
                     {
                         countDisgust++;
 

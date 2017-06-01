@@ -31,6 +31,11 @@ namespace EmotionApp
 
         private StringCollection classifiersEnable { get; set; }
 
+        private bool isOffEnable;
+        //private int comboBoxSelectedValue = -10;
+
+        private List<int> comboBoxValues { get; set; }
+
         public MainWindow()
         {
             InitializeComponent();
@@ -49,9 +54,11 @@ namespace EmotionApp
             canvas.MetricNames = classifiersEnable;
 
             // habilita/desabilita botões
-            btnStopCamera.IsEnabled = btnExit.IsEnabled = true;
+            btnStopCamera.IsEnabled = btnExit.IsEnabled = bntOff.IsEnabled = true;
 
-            btnStartCamera.IsEnabled = false;
+            btnStartCamera.IsEnabled = bntOn.IsEnabled = false;
+
+            fillComboBox();
 
             btnStartCamera.Click += btnStartCamera_Click;
             btnStopCamera.Click += btnStopCamera_Click;
@@ -74,7 +81,7 @@ namespace EmotionApp
                 btnStopCamera.IsEnabled = 
                 btnExit.IsEnabled = true;
 
-                const int cameraId = 0; // usar 1
+                const int cameraId = 1; // usar 1
                 const int numberOfFaces = 1;
                 const int cameraFPS = 60;
                 const int processFPS = 60;
@@ -357,7 +364,7 @@ namespace EmotionApp
             if (canvas.faceInfo.GetEnumerator().MoveNext() || canvas.eFaceInfo.GetEnumerator().MoveNext())
             {
                 PdfBuilder pdfBuilder = new PdfBuilder();
-                pdfBuilder.createPdfInfo(canvas.faceInfo, canvas.eFaceInfo, fileName);
+                pdfBuilder.createPdfInfo(canvas.faceInfo, canvas.eFaceInfo, fileName, isOffEnable, (int)comboBox.SelectedValue);
             }
 
             stopCamera();
@@ -386,5 +393,47 @@ namespace EmotionApp
         }
 
         public void onProcessingFinished() { }
+
+        private void bntOn_Click(object sender, RoutedEventArgs e)
+        {
+            isOffEnable = false;
+
+            bntOn.IsEnabled = false;
+            bntOff.IsEnabled = true;
+
+            comboBox.IsEnabled = true;
+        }
+
+        private void bntOff_Click(object sender, RoutedEventArgs e)
+        {
+            isOffEnable = true;
+
+            bntOn.IsEnabled = true;
+            bntOff.IsEnabled = false;
+
+            comboBox.IsEnabled = false;
+        }
+
+        private void fillComboBox()
+        {
+            comboBoxValues = new List<int>();
+            comboBoxValues.Add(20);
+            comboBoxValues.Add(15);
+            comboBoxValues.Add(10);
+            comboBoxValues.Add(5);
+            comboBoxValues.Add(0);
+            comboBoxValues.Add(-5);
+            comboBoxValues.Add(-10);
+            comboBoxValues.Add(-15);
+            comboBoxValues.Add(-20);
+
+            foreach(int i in comboBoxValues)
+            {
+                comboBox.Items.Add(i);
+            }
+
+            // ajuste de iluminacao default
+            comboBox.SelectedIndex = 6;
+        }
     }
 }

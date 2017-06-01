@@ -164,6 +164,7 @@
     <Content Include="affdex-native.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Resource Include="img\EmotionAppWithoutAge.png" />
     <Resource Include="img\EmotionApp.png" />
     <Resource Include="Resources\00.png" />
     <Resource Include="Resources\01.png" />
@@ -171,7 +172,6 @@
     <Resource Include="Resources\11.png" />
     <Resource Include="Resources\20.png" />
     <Resource Include="Resources\21.png" />
-    <Resource Include="img\logoEmotionAppWaterMark.PNG" />
     <Resource Include="Resources\anger.gif" />
     <Resource Include="Resources\anger.jpg" />
     <Resource Include="resources\attention.gif" />

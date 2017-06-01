@@ -39,9 +39,13 @@
             <Grid HorizontalAlignment="Center">
                 <GroupBox Margin="0,5,0,0"  Height="40" VerticalAlignment="Stretch" BorderBrush="Transparent" BorderThickness="0">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <Button x:Name="btnStartCamera" HorizontalAlignment="Center" Margin="0,0,5,0" VerticalAlignment="Top" Width="80" Content="Iniciar" />
-                        <Button x:Name="btnStopCamera" HorizontalAlignment="Center" Margin="0,0,5,0" VerticalAlignment="Top" Width="128" Content="Parar e Gerar Relatório" />
-                        <Button x:Name="btnExit" HorizontalAlignment="Center" Margin="0,0,5,0" VerticalAlignment="Bottom" Width="80" Content="Sair" />
+                        <Button x:Name="btnStartCamera" HorizontalAlignment="Center" Margin="0,6,5,0" VerticalAlignment="Top" Width="80" Content="Iniciar" />
+                        <Button x:Name="btnStopCamera" HorizontalAlignment="Center" Margin="0,6,5,0" VerticalAlignment="Top" Width="128" Content="Parar e Gerar Relatório" />
+                        <Button x:Name="btnExit" HorizontalAlignment="Center" Margin="0,0,5,1" VerticalAlignment="Bottom" Width="80" Content="Sair" />
+                        <Label x:Name="label" HorizontalAlignment="Center"  Margin="0,1,5,0" VerticalAlignment="Bottom" Content="Ajuste de iluminação" />
+                        <Button x:Name="bntOn" HorizontalAlignment="Center"  Margin="0,0,5,0" VerticalAlignment="Bottom" Content="On" Click="bntOn_Click" />
+                        <Button x:Name="bntOff" HorizontalAlignment="Center"  Margin="0,0,5,0" VerticalAlignment="Bottom" Content="Off" Click="bntOff_Click" />
+                        <ComboBox x:Name="comboBox" HorizontalAlignment="Center"  Margin="0,0,5,0" VerticalAlignment="Bottom" IsSynchronizedWithCurrentItem="False" />
                     </StackPanel>
                 </GroupBox>
             </Grid>

@@ -8,12 +8,14 @@ namespace EmotionApp
 {
     class HelpUtils
     {
-        public static string getAgeString(string ageAffedex)
+        public static string getAgeString(string ageAffedex, int comboBoxValue)
         {
             string idade = "";
             if (ageAffedex.Contains("18_24"))
             {
-                idade = "De 18 a 24 anos";
+                int i1 = 18 + comboBoxValue;
+                int i2 = 24 + comboBoxValue;
+                idade = "De " + i1.ToString() + " a " + i2.ToString() + " anos";
             }
             else if (ageAffedex.Contains("18"))
             {
@@ -21,19 +23,27 @@ namespace EmotionApp
             }
             else if (ageAffedex.Contains("25_34"))
             {
-                idade = "De 25 a 34 anos";
+                int i1 = 25 + comboBoxValue;
+                int i2 = 34 + comboBoxValue;
+                idade = "De " + i1.ToString() + " a " + i2.ToString() + " anos";
             }
             else if (ageAffedex.Contains("35_44"))
             {
-                idade = "De 35 a 44 anos";
+                int i1 = 35 + comboBoxValue;
+                int i2 = 44 + comboBoxValue;
+                idade = "De " + i1.ToString() + " a " + i2.ToString() + " anos";
             }
             else if (ageAffedex.Contains("45_54"))
             {
-                idade = "De 45 a 54 anos";
+                int i1 = 45 + comboBoxValue;
+                int i2 = 54 + comboBoxValue;
+                idade = "De " + i1.ToString() + " a " + i2.ToString() + " anos";
             }
             else if (ageAffedex.Contains("55_64"))
             {
-                idade = "De 55 a 64 anos";
+                int i1 = 55 + comboBoxValue;
+                int i2 = 64 + comboBoxValue;
+                idade = "De " + i1.ToString() + " a " + i2.ToString() + " anos";
             }
             else if (ageAffedex.Contains("65"))
             {
